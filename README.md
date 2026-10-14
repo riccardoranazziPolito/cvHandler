@@ -1,6 +1,6 @@
 # cvHandler
 
-An end-to-end autonomous multi-agent pipeline built with **LangGraph**, **LangChain (GPT-4o)**, **WeasyPrint**, and **browser-use** to analyze job postings, generate tailored ATS-friendly resumes, and automatically submit job applications via browser automation.
+An end-to-end autonomous multi-agent pipeline built with **LangGraph**, **Google Gemini (Gemini 3.8 Flash)**, **WeasyPrint**, and **browser-use** to analyze job postings, generate tailored ATS-friendly resumes, and automatically submit job applications via browser automation.
 
 ---
 
@@ -16,7 +16,7 @@ flowchart LR
 
 1. **Job Analyzer Agent (`job_analyzer_node`)**:
    - Ingests the job posting (URL or raw text) and the candidate's base profile (`profile.json`).
-   - Uses `gpt-4o` with Pydantic structured output (`JobAnalysisOutput`) to extract required hard skills, soft skills, company details, and candidate match points.
+   - Uses **Gemini 2.0 Flash** with Pydantic structured output (`JobAnalysisOutput`) to extract required hard skills, soft skills, company details, and candidate match points.
    - **Guiding Rule**: Strict prohibition against fabricating skills or experiences the user does not possess.
 
 2. **CV Optimizer Agent (`cv_optimizer_node`)**:
@@ -25,7 +25,7 @@ flowchart LR
    - Produces responsive, clean HTML/CSS and compiles it into an A4 PDF (`/tmp/cv_ready.pdf`) using **WeasyPrint**.
 
 3. **Executor / Submitter Agent (`submitter_node`)**:
-   - Operates a headless or visual Chromium browser session using **`browser-use`**.
+   - Operates a Chromium browser session using **`browser-use`** powered natively by **Gemini 2.0 Flash** (multimodal vision support).
    - Navigates to the job portal, fills out text fields (contact details, URLs), uploads the freshly compiled PDF resume, and accepts required privacy agreements.
    - Safely pauses and flags for manual intervention if blockers such as CAPTCHA or 2FA are detected.
 
@@ -37,9 +37,10 @@ flowchart LR
 cvHandler/
 ├── architecture.md     # Full design specification and agent prompt guidelines
 ├── state.py            # Pydantic schemas & LangGraph AgentState TypedDict
-├── agents.py           # Implementation of Analyzer, Optimizer, and Submitter nodes
+├── agents.py           # Implementation of Analyzer, Optimizer, and Submitter nodes (Gemini)
 ├── main.py             # LangGraph StateGraph builder, profile loader & async entrypoint
 ├── requirements.txt    # Project dependencies
+├── .env.example        # Example environment variables template
 ├── .gitignore          # Git exclusion rules (.venv, .env, PDFs, caches)
 └── README.md           # Project documentation
 ```
@@ -49,7 +50,7 @@ cvHandler/
 ## Prerequisites
 
 - **Python**: 3.10+ (tested on Python 3.12 and 3.13)
-- **OpenAI API Key**: Required for GPT-4o language and multimodal reasoning.
+- **Google Gemini API Key**: 100% Free via [Google AI Studio](https://aistudio.google.com/).
 - **macOS System Libraries** (for WeasyPrint):
   WeasyPrint requires Cairo and Pango. If you are on macOS, ensure Pango is installed via Homebrew:
   ```bash
@@ -84,9 +85,13 @@ cvHandler/
    ```
 
 5. **Configure Environment Variables**:
-   Create a `.env` file in the root directory:
+   Create a `.env` file in the root directory (or copy from `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+   Add your free Google Gemini API key:
    ```env
-   OPENAI_API_KEY="your-openai-api-key-here"
+   GEMINI_API_KEY="your-gemini-api-key-here"
    ```
 
 ---
@@ -133,7 +138,7 @@ python main.py
 ```
 
 ### 3. Execution Flow & Output
-1. The **Job Analyzer** extracts requirements and logs the matching points.
+1. The **Job Analyzer** extracts requirements and logs the matching points using Gemini.
 2. The **CV Optimizer** writes and renders the tailored resume to:
    ```
    /tmp/cv_ready.pdf

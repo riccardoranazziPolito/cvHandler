@@ -1,0 +1,32 @@
+{
+  "personal_info": {
+    "first_name": "Mario",
+    "last_name": "Rossi",
+    "email": "mario.rossi@example.com",
+    "phone": "+39 333 1234567",
+    "linkedin": "https://linkedin.com/in/mariorossi",
+    "github": "https://github.com/mariorossi"
+  },
+  "experiences": [
+    {
+      "role": "AI & Data Engineering Intern",
+      "company": "DataLab Srl",
+      "period": "2025 - 2026",
+      "description": "Sviluppo di pipeline dati distribuite in PySpark e modelli ML in Python."
+    }
+  ],
+  "education": [
+    {
+      "degree": "M.Sc. in Computer Engineering - AI & Data Analytics",
+      "institution": "Politecnico di Torino",
+      "year": "2026"
+    }
+  ],
+  "skills": [
+    "Python",
+    "PySpark",
+    "Machine Learning",
+    "Docker",
+    "SQL"
+  ]
+}
